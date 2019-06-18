@@ -10,6 +10,7 @@ module.exports = class {
         });
         this.menuManager = new MenuManager();
         this.event = {};
+        this.auth = {};
         this.init();
     }
 
@@ -28,20 +29,11 @@ module.exports = class {
         this.command('search', (event) => this.sendSearchResult(event));
         this.command('뭐먹지', (event) => this.sendRandomMenu(event));
         this.command('랜덤', (event) => this.sendRandom(event));
-        this.command('등록', (event) => {
-            if (event.source.userId === '') {
-                let param = this._extractParameter(event.message.text).split(' ');
-                let promise = this.menuManager.add(param[0], param[1]);
-                promise.then((message) => {
-                    this.bot.replyText(message);
-                }).catch((message) => {
-                    this.bot.replyText(message);
-                });
+        this.command('등록', (event) => this.registerMenu(event));
 
-            } else {
-                this.bot.replyText('봇 관리자만 사용 가능합니다.');
-            }
-        });
+        let fs = require("fs");
+        let contents = fs.readFileSync(process.env.URL + "/auth.json");
+        this.auth = JSON.parse(contents);
     }
 
     command(name, callback) {
@@ -170,5 +162,37 @@ module.exports = class {
 
     pickRandom(array) {
         return array && array.length ? array[Math.ceil(Math.random() * array.length) - 1] : null;
+    }
+
+    registerMenu(event) {
+        if (_checkAuth(event, "registerMenu")) {
+            let param = this._extractParameter(event.message.text).split(' ');
+            let promise = this.menuManager.add(param[0], param[1]);
+
+            promise.then((message) => {
+                this.bot.replyText(message);
+            }).catch((message) => {
+                this.bot.replyText(message);
+            });
+        } else {
+            this.bot.replyText('권한이 없습니다.');
+        }
+    }
+
+    _checkAuth(event, usage) {
+        const WHITE_LIST = "whiteList";
+        const ACCESS_AUTH = "accessAuthorities";
+
+        let userId = event.source.userId;
+        let userAuthority = "";
+
+        this.auth[WHITE_LIST].some(function (item) {
+            if (item.userId === userId){
+                userAuthority = item.authority;
+                return true;
+            }
+        });
+
+        return this.auth[ACCESS_AUTH][usage].includes(userAuthority);
     }
 };
