@@ -183,7 +183,7 @@ module.exports = class {
         let userId = event.source.userId;
         let userAuthority = "";
 
-        _.some(this.auth["whiteList"], function (item) {
+        this.auth["whiteList"].some(function (item) {
             if (item.userId === userId){
                 userAuthority = item.authority;
                 return true;
