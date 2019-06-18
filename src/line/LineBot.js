@@ -180,16 +180,19 @@ module.exports = class {
     }
 
     _checkAuth(event, usage) {
+        const WHITE_LIST = "whiteList";
+        const ACCESS_AUTH = "accessAuthorities";
+
         let userId = event.source.userId;
         let userAuthority = "";
 
-        this.auth["whiteList"].some(function (item) {
+        this.auth[WHITE_LIST].some(function (item) {
             if (item.userId === userId){
                 userAuthority = item.authority;
                 return true;
             }
         });
 
-        return this.auth["accessAuthorities"][usage].includes(userAuthority);
+        return this.auth[ACCESS_AUTH][usage].includes(userAuthority);
     }
 };
