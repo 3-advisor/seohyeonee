@@ -81,6 +81,11 @@ module.exports = class {
         return text.replace(regExp, '').trim();
     }
 
+    _extractParameterArray(text) {
+        const regExp = /\S+/g;
+        return this._extractParameter(text).match(regExp) || [];
+    }
+
     sendHelpMessage() {
         this.bot.replyText(`<사용 가능한 명령어>\n/검색 [검색어]: 검색\n/이미지 [검색어]: 이미지 검색\n/카페: 카페 시간표 보기\n/셔틀: 셔틀 시간표 보기\n/뭐먹지: 미래에셋 근처 음식점 랜덤 선택\n/나가: 봇이 대화방 나가기`);
     }
@@ -95,7 +100,7 @@ module.exports = class {
     }
 
     sendRandomMenu(event) {
-        let promise = this.menuManager.get(this._extractParameter(event.message.text));
+        let promise = this.menuManager.get(this._extractParameterArray(event.message.text));
         promise.then((list) => {
             console.log(list);
             let item = this.pickRandom(list);
@@ -152,9 +157,8 @@ module.exports = class {
     }
 
     sendRandom(event) {
-        let text = this._extractParameter(event.message.text);
-        if (text) {
-            let params = text.split(' ');
+        let params = this._extractParameterArray(event.message.text);
+        if (params.length) {
             this.bot.replyText(`"${this.pickRandom(params)}"가 선택되었습니다.`);
         } else {
             this.bot.replyText('선택할 내용이 없습니다.');
@@ -168,8 +172,8 @@ module.exports = class {
     registerMenu(event) {
         if (this._checkAuth(event, "registerMenu")) {
             console.log('권한 있음');
-            let param = this._extractParameter(event.message.text).split(' ');
-            let promise = this.menuManager.add(param[0], param[1]);
+            let params = this._extractParameterArray(event.message.text);
+            let promise = this.menuManager.add(params[0], params[1]);
 
             promise.then((message) => {
                 this.bot.replyText(message);
@@ -190,7 +194,7 @@ module.exports = class {
         let userAuthority = "";
 
         this.auth[WHITE_LIST].some(function (item) {
-            if (item.userId === userId){
+            if (item.userId === userId) {
                 userAuthority = item.authority;
                 return true;
             }
