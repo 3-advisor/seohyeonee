@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>서혀니 테스트 화면</h1>
+    <div class="input">
+        <h2>Input</h2>
+        <input type="text" placeholder="대화 내용" id="inputField">
+        <button type="button" id="inputButton">전송</button>
+        <div>
+            <h3>전송 내용</h3>
+            <p id="inputJson" style="width: 50%"></p>
+        </div>
+    </div>
+    <div class="output">
+        <h2>Output</h2>
+        <p id="outputText"></p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script>
+        let inputButton = document.getElementById('inputButton');
+        let outputText = document.getElementById('outputText');
+        let inputField = document.getElementById('inputField');
+
+        inputButton.addEventListener("click", () => {
+            if (inputField.value) {
+                let json = {
+                    events: [{
+                        "replyToken": "dummyReplyToken",
+                        "type": "message",
+                        "timestamp": new Date().valueOf(),
+                        "source": {
+                            "type": "user",
+                            "userId": "dummyUserId"
+                        },
+                        "message": {
+                            "id": "dummyMessageId",
+                            "type": "text",
+                            "text": inputField.value
+                        }
+                    },]
+                };
+                $("#inputJson").text(JSON.stringify(json));
+                $.ajax({
+                    url: './line-webhook',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        alert("test");
+                        $(outputText).append(data);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
