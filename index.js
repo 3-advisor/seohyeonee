@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
 
@@ -23,7 +22,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.post('/line-webhook', bodyParser.json(), function (req, res) {
+app.post('/line-webhook', express.json(), function (req, res) {
     res.status(200).end();
 
     const lineBot = new LineBot(LINE_API_TOKEN);
