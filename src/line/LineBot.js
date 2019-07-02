@@ -1,6 +1,7 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
+const path = require('path');
 
 module.exports = class {
     constructor(token) {
@@ -32,7 +33,7 @@ module.exports = class {
         this.command('등록', (event) => this.registerMenu(event));
 
         let fs = require("fs");
-        let contents = fs.readFileSync(process.env.URL + "/auth.json");
+        let contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
         this.auth = JSON.parse(contents);
     }
 
@@ -165,7 +166,8 @@ module.exports = class {
     }
 
     registerMenu(event) {
-        if (_checkAuth(event, "registerMenu")) {
+        if (this._checkAuth(event, "registerMenu")) {
+            console.log('권한 있음');
             let param = this._extractParameter(event.message.text).split(' ');
             let promise = this.menuManager.add(param[0], param[1]);
 
@@ -175,6 +177,7 @@ module.exports = class {
                 this.bot.replyText(message);
             });
         } else {
+            console.log('권한 없음');
             this.bot.replyText('권한이 없습니다.');
         }
     }
