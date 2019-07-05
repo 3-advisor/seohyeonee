@@ -17,7 +17,6 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/', (req, res) => {
     if (process.env.NODE_ENV == 'production') {
-        // TODO: 정식 웹페이지로 변경 필요.
         Restaurant.find(function (err, list) { // 데이터 임시 출력
             if (err) return res.status(500).send({
                 error: 'database failure'

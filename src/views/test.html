@@ -1,67 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>서혀니 테스트 화면</title>
+    <style>
+        body { margin: 0; padding: 10px; font-family: sans-serif; }
+        h1 { margin: 0; text-align: center; }
+        h2 { padding-top: 10px; border-top: 1px solid #ccc; }
+        h3 { font-weight: normal; }
+        fieldset { margin: 5px 0; }
+        input {font-size: 14px; line-height: 22px;}
+        button[type=submit] { padding: 5px 10px; font-size: 14px; }
+        p { padding: 10px; }
+        input, button, p, fieldset { border: 1px solid #666; }
+        .wrap {max-width: 1080px; margin: 0 auto;}
+    </style>
 </head>
 
 <body>
-    <h1>서혀니 테스트 화면</h1>
-    <div class="input">
-        <h2>Input</h2>
-        <input type="text" placeholder="대화 내용" id="inputField">
-        <button type="button" id="inputButton">전송</button>
-        <div>
-            <h3>전송 내용</h3>
-            <p id="inputJson" style="width: 50%"></p>
-        </div>
-    </div>
-    <div class="output">
-        <h2>Output</h2>
-        <p id="outputText"></p>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script>
-        let inputButton = document.getElementById('inputButton');
-        let outputText = document.getElementById('outputText');
-        let inputField = document.getElementById('inputField');
+<h1>서혀니 테스트 화면</h1>
+<div class="wrap">
+    <h2>Input</h2>
+    <form id="eventForm">
+        <h3>이벤트 입력</h3>
+        <input type="text" placeholder="텍스트" name="messageText" required>
+        <input type="text" placeholder="유저id" name="eventUserId">
+        <fieldset>
+            <legend>소스 타입</legend>
+            <input type="radio" id="sourceTypeUser" name="sourceType" value="user" checked>
+            <label for="sourceTypeUser">user</label>
+            <input type="radio" id="sourceTypeGroup" name="sourceType" value="group">
+            <label for="sourceTypeGroup">group</label>
+            <input type="radio" id="sourceTypeRoom" name="sourceType" value="room">
+            <label for="sourceTypeRoom">room</label>
+        </fieldset>
+        <button type="submit" id="submitButton">전송</button>
+    </form>
+    <h3>이벤트 전송 내용</h3>
+    <p id="eventJson"></p>
+    <h2>Output</h2>
+    <p id="outputText"></p>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script>
+    let form = document.getElementById('eventForm')
+    let eventJson = document.getElementById('eventJson');
+    let outputText = document.getElementById('outputText');
 
-        inputButton.addEventListener("click", () => {
-            if (inputField.value) {
-                let json = {
-                    events: [{
-                        "replyToken": "dummyReplyToken",
-                        "type": "message",
-                        "timestamp": new Date().valueOf(),
-                        "source": {
-                            "type": "user",
-                            "userId": "dummyUserId"
-                        },
-                        "message": {
-                            "id": "dummyMessageId",
-                            "type": "text",
-                            "text": inputField.value
-                        }
-                    },]
-                };
-                $("#inputJson").text(JSON.stringify(json));
-                $.ajax({
-                    url: './line-webhook',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(json),
-                    success: function (data) {
-                        alert("test");
-                        $(outputText).append(data);
-                    }
-                });
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let formData = new FormData(form);
+
+        if (!formData.has('messageText')) return;
+
+        let json = {
+            events: [{
+                "replyToken": "dummyReplyToken",
+                "type": "message",
+                "timestamp": new Date().valueOf(),
+                "source": {
+                    "type": formData.get('sourceType') || "user",
+                    "userId": formData.get('eventUserId') || "dummyUserId"
+                },
+                "message": {
+                    "id": "dummyMessageId",
+                    "type": "text",
+                    "text": formData.get('messageText') || ""
+                }
+            }]
+        };
+
+        eventJson.innerHTML = JSON.stringify(json);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './line-webhook', true);
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                alert(xhr.responseText);
             }
-        });
-    </script>
+        }
+        xhr.send(JSON.stringify(json));
+    });
+</script>
 </body>
 
 </html>
