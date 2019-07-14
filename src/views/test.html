@@ -13,7 +13,7 @@
         fieldset { margin: 5px 0; }
         input {font-size: 14px; line-height: 22px;}
         button[type=submit] { padding: 5px 10px; font-size: 14px; }
-        p { padding: 10px; }
+        p { padding: 10px; word-break: break-all; }
         input, button, p, fieldset { border: 1px solid #666; }
         .wrap {max-width: 1080px; margin: 0 auto;}
     </style>
@@ -72,6 +72,14 @@
                 }
             }]
         };
+        switch(formData.get('sourceType')) {
+            case 'group':
+                json.events[0].source.groupId = "dummyGroupId";
+                break;
+            case 'room':
+                json.events[0].source.groupId = "dummyRoomId";
+                break;
+        }
 
         eventJson.innerHTML = JSON.stringify(json);
 
@@ -80,7 +88,7 @@
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.onreadystatechange = function() {
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                alert(xhr.responseText);
+                outputText.innerHTML = xhr.responseText;
             }
         }
         xhr.send(JSON.stringify(json));
