@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 const LineBot = require('./src/line/LineBot');
 const CommonLineBot = require('./src/line/CommonLineBot');
@@ -9,13 +10,14 @@ const TestAPIConnector = require('./src/line/TestAPIConnector');
 
 const Restaurant = require('./src/model/Restaurant');
 
+dotenv.config({path: './local.env'});
+
 const LINE_API_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || 'DUMMY_LINE_CHANNEL_ACCESS_TOKEN';
 const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_LOCAL_URI || '';
 
 const app = express();
-if (process.env.NODE_ENV == 'production') {
-    mongoose.connect(process.env.MONGODB_URI);
-}
+mongoose.connect(MONGODB_URI);
 
 app.use(express.static(path.join(__dirname, 'static')));
 
