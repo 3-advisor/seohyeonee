@@ -7,7 +7,7 @@ module.exports = class {
 
     }
     add(name, category) {
-        let entity = new Restaurant({
+        const entity = new Restaurant({
             name,
             category
         });
@@ -22,18 +22,17 @@ module.exports = class {
             });
         });
     }
-    get(options) {
-        const MAX_ARGS_COUNT = RESTAURANT_FIND_PARAM_KEYS.length;
-        const SLICED_OPTIONS = options.slice(0, MAX_ARGS_COUNT);
+    get(optionArray) {
+        const slicedOptionArray = optionArray.slice(0, RESTAURANT_FIND_PARAM_KEYS.length);
 
         return new Promise(function (resolve, reject) {
-            const OPTIONS = SLICED_OPTIONS.reduce((result, item, i) => {
-                const KEY = RESTAURANT_FIND_PARAM_KEYS[i];
-                result[KEY] = item;
+            const options = slicedOptionArray.reduce((result, item, i) => {
+                const key = RESTAURANT_FIND_PARAM_KEYS[i];
+                result[key] = item;
                 return result;
             }, {});
 
-            Restaurant.find(OPTIONS, function (err, list) {
+            Restaurant.find(options, function (err, list) {
                 if (err) {
                     reject('database failure')
                 };

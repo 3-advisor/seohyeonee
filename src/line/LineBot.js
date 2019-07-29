@@ -32,8 +32,8 @@ module.exports = class {
         this.command('랜덤', (event) => this.sendRandom(event));
         this.command('등록', (event) => this.registerMenu(event));
 
-        let fs = require("fs");
-        let contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
+        const fs = require("fs");
+        const contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
         this.auth = JSON.parse(contents);
     }
 
@@ -51,7 +51,7 @@ module.exports = class {
     }
 
     start(body) {
-        for (let event of body.events) {
+        for (const event of body.events) {
             if (event.type == 'message') {
                 console.log(event);
                 this.bot.setToken(event.replyToken);
@@ -62,7 +62,7 @@ module.exports = class {
 
     parse(event) {
         if (event.message.type === 'text') {
-            let commandText = this._extractCommand(event.message.text);
+            const commandText = this._extractCommand(event.message.text);
 
             if (commandText) {
                 this.runCommand(commandText, event);
@@ -72,7 +72,7 @@ module.exports = class {
 
     _extractCommand(text) {
         const regExp = /^\/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\w]+/;
-        let command = text.match(regExp);
+        const command = text.match(regExp);
         return command ? command[0].replace('/', '') : null;
     }
 
@@ -100,10 +100,10 @@ module.exports = class {
     }
 
     sendRandomMenu(event) {
-        let promise = this.menuManager.get(this._extractParameterArray(event.message.text));
+        const promise = this.menuManager.get(this._extractParameterArray(event.message.text));
         promise.then((list) => {
             console.log(list);
-            let item = this.pickRandom(list);
+            const item = this.pickRandom(list);
             this.bot.replyText(`[${item.category}] ${item.name}`);
         }).catch((reason) => {
             this.bot.replyText(reason);
@@ -126,12 +126,12 @@ module.exports = class {
     }
 
     sendSearchResult(event) {
-        let keyword = this._extractParameter(event.message.text);
+        const keyword = this._extractParameter(event.message.text);
 
         if (!keyword) {
             this.bot.replyText('이미지 검색 키워드가 없습니다.');
         } else {
-            let promise = this.searcher.search(keyword);
+            const promise = this.searcher.search(keyword);
             promise.then((result) => {
                 this.bot.replyText(result);
             }).catch((reason) => {
@@ -141,12 +141,12 @@ module.exports = class {
     }
 
     sendSearchImage(event) {
-        let keyword = this._extractParameter(event.message.text);
+        const keyword = this._extractParameter(event.message.text);
 
         if (!keyword) {
             this.bot.replyText('이미지 검색 키워드가 없습니다.');
         } else {
-            let promise = this.searcher.searchImage(keyword);
+            const promise = this.searcher.searchImage(keyword);
             promise.then((url) => {
                 console.log('index', url);
                 this.bot.replyImage(url.origin, url.thumb);
@@ -157,7 +157,7 @@ module.exports = class {
     }
 
     sendRandom(event) {
-        let params = this._extractParameterArray(event.message.text);
+        const params = this._extractParameterArray(event.message.text);
         if (params.length) {
             this.bot.replyText(`"${this.pickRandom(params)}"가 선택되었습니다.`);
         } else {
@@ -172,8 +172,8 @@ module.exports = class {
     registerMenu(event) {
         if (this._checkAuth(event, "registerMenu")) {
             console.log('권한 있음');
-            let params = this._extractParameterArray(event.message.text);
-            let promise = this.menuManager.add(params[0], params[1]);
+            const params = this._extractParameterArray(event.message.text);
+            const promise = this.menuManager.add(params[0], params[1]);
 
             promise.then((message) => {
                 this.bot.replyText(message);
@@ -190,7 +190,7 @@ module.exports = class {
         const WHITE_LIST = "whiteList";
         const ACCESS_AUTH = "accessAuthorities";
 
-        let userId = event.source.userId;
+        const userId = event.source.userId;
         let userAuthority = "";
 
         this.auth[WHITE_LIST].some(function (item) {
