@@ -3,6 +3,8 @@ const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
 const path = require('path');
 
+const SEND_RANDOM_MENU_DELIMITER = `#`;
+
 module.exports = class {
     constructor(token) {
         this.bot = new CommonLineBot(token);
@@ -81,9 +83,18 @@ module.exports = class {
         return text.replace(regExp, '').trim();
     }
 
-    _extractParameterArray(text) {
-        const regExp = /\S+/g;
-        return this._extractParameter(text).match(regExp) || [];
+    _extractParameterArray(text, delimiter = ' ') {
+        const replaceWhiteSpaceToSingleSpace = (text) => {
+            const regExp = /( \s+)|(?! )(\s+)/g;
+            return text.replace(regExp, ' ');
+        };
+        const rawParams = this._extractParameter(text);
+        const singleSpaceParams = replaceWhiteSpaceToSingleSpace(rawParams);
+        const params = singleSpaceParams.split(new RegExp(` *(?:${delimiter} *)+`, "g")).splice(1);
+        if (params[params.length - 1] === '') {
+            params.splice(0, params.length - 1);
+        }
+        return params;
     }
 
     sendHelpMessage() {
@@ -100,7 +111,7 @@ module.exports = class {
     }
 
     sendRandomMenu(event) {
-        const promise = this.menuManager.get(this._extractParameterArray(event.message.text));
+        const promise = this.menuManager.get(this._extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER));
         promise.then((list) => {
             console.log(list);
             const item = this.pickRandom(list);
