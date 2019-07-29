@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,5 +23,8 @@
     "express": "^4.15.3",
     "mongoose": "^5.5.8",
     "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0"
   }
 }
