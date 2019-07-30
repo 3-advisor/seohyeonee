@@ -92,7 +92,7 @@ module.exports = class {
         const singleSpaceParams = replaceWhiteSpaceToSingleSpace(rawParams);
         const params = singleSpaceParams.split(new RegExp(` *(?:${delimiter} *)+`, "g")).splice(1);
         if (params[params.length - 1] === '') {
-            params.splice(0, params.length - 1);
+            params.pop();
         }
         return params;
     }
