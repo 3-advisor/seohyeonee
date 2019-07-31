@@ -1,6 +1,8 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
+const AuthWhitelist = require('../model/AuthWhitelist');
+const AuthAccessAuthorities = require('../model/AuthAccessAuthorities');
 const path = require('path');
 
 module.exports = class {
@@ -11,7 +13,7 @@ module.exports = class {
         });
         this.menuManager = new MenuManager();
         this.event = {};
-        this.auth = {};
+        //this.auth = {};
         this.init();
     }
 
@@ -32,9 +34,9 @@ module.exports = class {
         this.command('랜덤', (event) => this.sendRandom(event));
         this.command('등록', (event) => this.registerMenu(event));
 
-        let fs = require("fs");
-        let contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
-        this.auth = JSON.parse(contents);
+        //let fs = require("fs");
+        //let contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
+        //this.auth = JSON.parse(contents);
     }
 
     command(name, callback) {
@@ -167,36 +169,86 @@ module.exports = class {
     }
 
     registerMenu(event) {
-        if (this._checkAuth(event, "registerMenu")) {
-            console.log('권한 있음');
-            let param = this._extractParameter(event.message.text).split(' ');
-            let promise = this.menuManager.add(param[0], param[1]);
 
-            promise.then((message) => {
-                this.bot.replyText(message);
-            }).catch((message) => {
-                this.bot.replyText(message);
-            });
-        } else {
-            console.log('권한 없음');
-            this.bot.replyText('권한이 없습니다.');
-        }
+        let promise = this._checkAuth(event, "registerMenu");
+
+        promise.then((result) => {
+            console.log('registerMenu', result);
+
+            if (result) {
+                console.log('권한 있음');
+                let param = this._extractParameter(event.message.text).split(' ');
+                let promise = this.menuManager.add(param[0], param[1]);
+    
+                promise.then((message) => {
+                    this.bot.replyText(message);
+                }).catch((message) => {
+                    this.bot.replyText(message);
+                });
+            } else {
+                console.log('권한 없음');
+                this.bot.replyText('권한이 없습니다.');
+            }
+        }).catch((reason) => {
+            this.bot.replyText(reason);
+        });
     }
 
     _checkAuth(event, usage) {
-        const WHITE_LIST = "whiteList";
-        const ACCESS_AUTH = "accessAuthorities";
-
+        let result = false;
         let userId = event.source.userId;
         let userAuthority = "";
+        let accessAuthorities = [];
 
-        this.auth[WHITE_LIST].some(function (item) {
-            if (item.userId === userId){
-                userAuthority = item.authority;
-                return true;
-            }
+        return new Promise(function (resolve, reject) {
+            let promise = new Promise(function (resolve, reject) {
+                let options = {
+                    userId: userId
+                }
+    
+                AuthWhitelist.find(options, function (err, list) {
+                    if (err) {
+                        reject('database failure')
+                    };
+                    resolve(list);
+                });
+            });
+            promise.then((list) => {
+                userAuthority = list[0].authority;
+                console.log(userAuthority);
+                if (accessAuthorities.length > 0) {
+                    result = accessAuthorities.includes(userAuthority);
+                    console.log("resolve[1] : " + result);
+                    resolve(result);
+                }
+            }).catch((reason) => {
+                reject(reason);
+            });
+    
+    
+            let promise2 = new Promise(function (resolve, reject) {
+                let options = {
+                    accessTarget: usage
+                }
+    
+                AuthAccessAuthorities.find(options, function (err, list) {
+                    if (err) {
+                        reject('database failure')
+                    };
+                    resolve(list);
+                });
+            });
+            promise2.then((list) => {
+                accessAuthorities = list[0].authorityArray;
+                console.log(accessAuthorities);
+                if (userAuthority.length > 0) {
+                    result = accessAuthorities.includes(userAuthority);
+                    console.log("resolve[2] : " + result);
+                    resolve(result);
+                }
+            }).catch((reason) => {
+                reject(reason);
+            });
         });
-
-        return this.auth[ACCESS_AUTH][usage].includes(userAuthority);
     }
 };
