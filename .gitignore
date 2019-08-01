@@ -1,3 +1,13 @@
+# Seohyeonee
+local.env
+
+## local db
+/dev_db/datas/
+
+
+# ---
+
+
 # Logs
 logs
 *.log

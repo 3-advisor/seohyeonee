@@ -6,8 +6,8 @@ const path = require('path');
 const SEND_RANDOM_MENU_DELIMITER = `#`;
 
 module.exports = class {
-    constructor(token) {
-        this.bot = new CommonLineBot(token);
+    constructor(commonLineBot) {
+        this.bot = commonLineBot;
         this.searcher = new Searcher({
             useHTTPS: true
         });
@@ -132,6 +132,7 @@ module.exports = class {
         const thumbUrl = process.env.URL + '/images/shuttle_thumb_2019_01_29.jpg';
         this.bot.replyImage(originUrl, thumbUrl);
     }
+    
     sendRandomMember(source) {
         this.bot.getMembersIds(source);
     }
