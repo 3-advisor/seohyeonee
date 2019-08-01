@@ -10,16 +10,16 @@ const TestAPIConnector = require('./src/line/TestAPIConnector');
 
 const Restaurant = require('./src/model/Restaurant');
 
-dotenv.config({path: './local.env'});
+dotenv.config({ path: './local.env' });
 
 const LINE_API_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || 'DUMMY_LINE_CHANNEL_ACCESS_TOKEN';
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = (process.env.DB_ENV === 'local') ? process.env.MONGODB_LOCAL_URI : (process.env.MONGODB_URI || '');
+const MONGODB_URI = (process.env.DB_ENV === 'local') ? process.env.MONGODB_LOCAL_URI : process.env.MONGODB_URI;
 
 const app = express();
 
-if (process.env.MONGODB_URI) {
-    mongoose.connect(process.env.MONGODB_URI);
+if (MONGODB_URI) {
+    mongoose.connect(MONGODB_URI);
 } else {
     const ERROR_MSG_DB_NOT_CONNECTED = `DB not connected. It may not work. (process.env.MONGODB_RUI = ${process.env.MONGODB_URI})`;
     const RED_MSG_START = `\x1b[41m`;

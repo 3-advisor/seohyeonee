@@ -1,11 +1,13 @@
 const Restaurant = require('../model/Restaurant');
 
+const RESTAURANT_FIND_PARAM_KEYS = ['category', 'etc'];
+
 module.exports = class {
     constructor() {
 
     }
     add(name, category) {
-        let entity = new Restaurant({
+        const entity = new Restaurant({
             name,
             category
         });
@@ -20,11 +22,15 @@ module.exports = class {
             });
         });
     }
-    get(category) {
+    get(optionArray) {
+        const slicedOptionArray = optionArray.slice(0, RESTAURANT_FIND_PARAM_KEYS.length);
+
         return new Promise(function (resolve, reject) {
-            let options = category ? {
-                category: category
-            } : {};
+            const options = slicedOptionArray.reduce((result, item, i) => {
+                const key = RESTAURANT_FIND_PARAM_KEYS[i];
+                result[key] = item;
+                return result;
+            }, {});
 
             Restaurant.find(options, function (err, list) {
                 if (err) {
