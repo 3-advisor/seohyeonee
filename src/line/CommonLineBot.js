@@ -1,12 +1,8 @@
 const APIConnector = require("./APIConnector");
 
 module.exports = class {
-    constructor(CHANNEL_ACCESS_TOKEN) {
-        try {
-            this.apiConnector = new APIConnector(CHANNEL_ACCESS_TOKEN);
-        } catch (e) {
-            throw e;
-        }
+    constructor(apiConnector) {
+        this.apiConnector = apiConnector;
     }
 
     setToken(token) {
