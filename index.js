@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_LOCAL_URI || '';
 
 const app = express();
-mongoose.connect(MONGODB_URI);
+console.log(MONGODB_URI);
+mongoose.connect(MONGODB_URI).catch(error => {
+    console.log('fail connect db');
+});
 
 app.use(express.static(path.join(__dirname, 'static')));
 

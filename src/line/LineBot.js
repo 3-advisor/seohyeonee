@@ -1,8 +1,9 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
-const AuthWhitelist = require('../model/AuthWhitelist');
-const AuthAccessAuthorities = require('../model/AuthAccessAuthorities');
+const AuthWhitelist = require('../model/Auth/AuthWhitelist');
+const AuthAccessAuthorities = require('../model/Auth/AuthAccessAuthorities');
+const ACCESS_TARGET = require('../model/Auth/AccessTarget');
 const path = require('path');
 
 module.exports = class {
@@ -101,7 +102,7 @@ module.exports = class {
         promise.then((list) => {
             console.log(list);
             let item = this.pickRandom(list);
-            this.bot.replyText(`[${item.category}] ${item.name}`);
+            this.bot.replyText(`[${item.keyword}] ${item.name}`);
         }).catch((reason) => {
             this.bot.replyText(reason);
         });
@@ -118,7 +119,7 @@ module.exports = class {
         const thumbUrl = process.env.URL + '/images/shuttle_thumb_2019_01_29.jpg';
         this.bot.replyImage(originUrl, thumbUrl);
     }
-    
+
     sendRandomMember(source) {
         this.bot.getMembersIds(source);
     }
@@ -169,8 +170,7 @@ module.exports = class {
     }
 
     registerMenu(event) {
-
-        let promise = this._checkAuth(event, "registerMenu");
+        let promise = this._checkAuth(event, ACCESS_TARGET.REGISTER_MENU);
 
         promise.then((result) => {
             console.log('registerMenu', result);
@@ -179,7 +179,7 @@ module.exports = class {
                 console.log('권한 있음');
                 let param = this._extractParameter(event.message.text).split(' ');
                 let promise = this.menuManager.add(param[0], param[1]);
-    
+
                 promise.then((message) => {
                     this.bot.replyText(message);
                 }).catch((message) => {
@@ -195,59 +195,46 @@ module.exports = class {
     }
 
     _checkAuth(event, usage) {
-        let result = false;
         let userId = event.source.userId;
-        let userAuthority = "";
-        let accessAuthorities = [];
 
         return new Promise(function (resolve, reject) {
-            let promise = new Promise(function (resolve, reject) {
+            let promise1 = new Promise(function (resolve, reject) {
                 let options = {
                     userId: userId
-                }
-    
-                AuthWhitelist.find(options, function (err, list) {
+                };
+
+                AuthWhitelist.findOne(options, function (err, val) {
                     if (err) {
                         reject('database failure')
                     };
-                    resolve(list);
+                    resolve(val);
                 });
             });
-            promise.then((list) => {
-                userAuthority = list[0].authority;
-                console.log(userAuthority);
-                if (accessAuthorities.length > 0) {
-                    result = accessAuthorities.includes(userAuthority);
-                    console.log("resolve[1] : " + result);
-                    resolve(result);
-                }
-            }).catch((reason) => {
-                reject(reason);
-            });
-    
-    
+
             let promise2 = new Promise(function (resolve, reject) {
                 let options = {
                     accessTarget: usage
-                }
-    
-                AuthAccessAuthorities.find(options, function (err, list) {
+                };
+
+                AuthAccessAuthorities.findOne(options, function (err, val) {
                     if (err) {
                         reject('database failure')
                     };
-                    resolve(list);
+                    resolve(val);
                 });
             });
-            promise2.then((list) => {
-                accessAuthorities = list[0].authorityArray;
+
+            Promise.all([promise1, promise2]).then(function(values) {
+                let userAuthority = values[0].authority;
+                let accessAuthorities = values[1].authorityArray;
+
+                console.log(values);
+                console.log(userAuthority);
                 console.log(accessAuthorities);
-                if (userAuthority.length > 0) {
-                    result = accessAuthorities.includes(userAuthority);
-                    console.log("resolve[2] : " + result);
-                    resolve(result);
+
+                if (accessAuthorities.length > 0) {
+                    resolve(accessAuthorities.includes(userAuthority));
                 }
-            }).catch((reason) => {
-                reject(reason);
             });
         });
     }

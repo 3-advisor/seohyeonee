@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var restaurantSchema = new Schema({
   name: String,
-  category: String,
+  keyword: String,
 }, {
   collection: 'restaurant'
 });
