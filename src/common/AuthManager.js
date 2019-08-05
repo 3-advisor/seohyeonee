@@ -1,43 +1,56 @@
-const Restaurant = require('../model/Restaurant');
+/*
+ * Copyright (c) 2019 LINE Corporation. All rights reserved.
+ * LINE Corporation PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
 
-const RESTAURANT_FIND_PARAM_KEYS = ['category', 'etc'];
+const AccessAuthorities = require('../model/auth/AuthAccessAuthorities');
+const Whitelist = require('../model/auth/AuthWhitelist');
 
 module.exports = class {
     constructor() {
-
     }
-    add(name, category) {
-        const entity = new Restaurant({
-            name,
-            category
-        });
-
+    check(userId, accessTarget) {
         return new Promise(function (resolve, reject) {
-            entity.save(function (err) {
-                if (err) {
-                    console.error(err);
-                    reject('fail');
-                }
-                resolve('ok');
-            });
-        });
-    }
-    get(optionArray) {
-        const slicedOptionArray = optionArray.slice(0, RESTAURANT_FIND_PARAM_KEYS.length);
-
-        return new Promise(function (resolve, reject) {
-            const options = slicedOptionArray.reduce((result, item, i) => {
-                const key = RESTAURANT_FIND_PARAM_KEYS[i];
-                result[key] = item;
-                return result;
-            }, {});
-
-            Restaurant.find(options, function (err, list) {
-                if (err) {
-                    reject('database failure')
+            let promise1 = new Promise(function (resolve, reject) {
+                let options = {
+                    userId: userId
                 };
-                resolve(list);
+
+                Whitelist.findOne(options, function (err, val) {
+                    if (err) {
+                        reject('database failure')
+                    }
+                    resolve(val);
+                });
+            });
+
+            let promise2 = new Promise(function (resolve, reject) {
+                let options = {
+                    accessTarget: accessTarget
+                };
+
+                AccessAuthorities.findOne(options, function (err, val) {
+                    if (err) {
+                        reject('database failure')
+                    }
+                    resolve(val);
+                });
+            });
+
+            Promise.all([promise1, promise2]).then(function(values) {
+                let userAuthority = values[0].authority;
+                let accessAuthorities = values[1].authorityArray;
+
+                console.log(values);
+                console.log(userAuthority);
+                console.log(accessAuthorities);
+
+                if (accessAuthorities.length > 0) {
+                    resolve(accessAuthorities.includes(userAuthority));
+                } else {
+                    reject('auth failure');
+                }
             });
         });
     }
-}
+};

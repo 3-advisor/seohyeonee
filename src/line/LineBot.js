@@ -1,8 +1,7 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
-const AuthWhitelist = require('../model/auth/AuthWhitelist');
-const AuthAccessAuthorities = require('../model/auth/AuthAccessAuthorities');
+const AuthManager = require('../common/AuthManager');
 const ACCESS_TARGET = require('../model/auth/AccessTarget');
 const path = require('path');
 
@@ -14,9 +13,9 @@ module.exports = class {
         this.searcher = new Searcher({
             useHTTPS: true
         });
-        this.menuManager = new MenuManager();
         this.event = {};
-        //this.auth = {};
+        this.menuManager = new MenuManager();
+        this.authManager = new AuthManager();
         this.init();
     }
 
@@ -181,7 +180,8 @@ module.exports = class {
     }
 
     registerMenu(event) {
-        let promise = this._checkAuth(event, ACCESS_TARGET.REGISTER_MENU);
+        let userId = event.source.userId;
+        let promise = this.authManager.check(userId, ACCESS_TARGET.REGISTER_MENU);
 
         promise.then((result) => {
             console.log('registerMenu', result);
@@ -200,51 +200,6 @@ module.exports = class {
                 console.log('권한 없음');
                 this.bot.replyText('권한이 없습니다.');
             }
-        });
-    }
-
-    _checkAuth(event, usage) {
-        let userId = event.source.userId;
-
-        return new Promise(function (resolve, reject) {
-            let promise1 = new Promise(function (resolve, reject) {
-                let options = {
-                    userId: userId
-                };
-
-                AuthWhitelist.findOne(options, function (err, val) {
-                    if (err) {
-                        reject('database failure')
-                    }
-                    resolve(val);
-                });
-            });
-
-            let promise2 = new Promise(function (resolve, reject) {
-                let options = {
-                    accessTarget: usage
-                };
-
-                AuthAccessAuthorities.findOne(options, function (err, val) {
-                    if (err) {
-                        reject('database failure')
-                    }
-                    resolve(val);
-                });
-            });
-
-            Promise.all([promise1, promise2]).then(function(values) {
-                let userAuthority = values[0].authority;
-                let accessAuthorities = values[1].authorityArray;
-
-                console.log(values);
-                console.log(userAuthority);
-                console.log(accessAuthorities);
-
-                if (accessAuthorities.length > 0) {
-                    resolve(accessAuthorities.includes(userAuthority));
-                }
-            });
         });
     }
 };
