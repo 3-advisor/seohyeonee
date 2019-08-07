@@ -1,6 +1,6 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
-const MenuManager = require('../common/menuManager');
+const MenuManager = require('../common/MenuManager');
 const AuthManager = require('../common/AuthManager');
 const ACCESS_TARGET = require('../model/auth/AccessTarget');
 const path = require('path');

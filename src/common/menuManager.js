@@ -4,12 +4,12 @@ const RESTAURANT_FIND_PARAM_KEYS = ['category', 'etc'];
 
 module.exports = class {
     constructor() {
-
     }
-    add(name, category) {
+    add(name, description, tags) {
         const entity = new Restaurant({
             name,
-            category
+            description,
+            tags,
         });
 
         return new Promise(function (resolve, reject) {
@@ -26,6 +26,7 @@ module.exports = class {
         const slicedOptionArray = optionArray.slice(0, RESTAURANT_FIND_PARAM_KEYS.length);
 
         return new Promise(function (resolve, reject) {
+            // TODO fix.
             const options = slicedOptionArray.reduce((result, item, i) => {
                 const key = RESTAURANT_FIND_PARAM_KEYS[i];
                 result[key] = item;
