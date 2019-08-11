@@ -188,7 +188,9 @@ module.exports = class {
         if (this._checkAuth(event, "registerMenu")) {
             console.log('권한 있음');
             const params = this._extractParameterArray(event.message.text, DELIMITER_REGISTER_MENU);
-            const promise = this.menuManager.add(params[0], params[1]);
+            const restaurant = params[0];
+            const tags = params.slice(1);
+            const promise = this.menuManager.add(restaurant, tags);
 
             promise.then((message) => {
                 this.bot.replyText(message);

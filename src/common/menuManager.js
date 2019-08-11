@@ -6,10 +6,11 @@ module.exports = class {
     constructor() {
 
     }
-    add(name, category) {
+    add(name, tags) {
         const entity = new Restaurant({
             name,
-            category
+            description: '',
+            tags
         });
 
         return new Promise(function (resolve, reject) {
