@@ -3,7 +3,10 @@ const CommonLineBot = require('./CommonLineBot');
 const MenuManager = require('../common/menuManager');
 const path = require('path');
 
-const SEND_RANDOM_MENU_DELIMITER = `#`;
+// todo : env에서 설정하도록 하기?
+const DELIMITER_DEFAULT = ` `;
+const DELIMITER_SEND_RANDOM_MENU = `#`;
+const DELIMITER_REGISTER_MENU = `#`;
 
 module.exports = class {
     constructor(commonLineBot) {
@@ -83,7 +86,7 @@ module.exports = class {
         return text.replace(regExp, '').trim();
     }
 
-    _extractParameterArray(text, delimiter = ' ') {
+    _extractParameterArray(text, delimiter = DELIMITER_DEFAULT) {
         const replaceWhiteSpaceToSingleSpace = (text) => {
             const regExp = /( \s+)|(?! )(\s+)/g;
             return text.replace(regExp, ' ');
@@ -111,7 +114,7 @@ module.exports = class {
     }
 
     sendRandomMenu(event) {
-        const promise = this.menuManager.get(this._extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER));
+        const promise = this.menuManager.get(this._extractParameterArray(event.message.text, DELIMITER_SEND_RANDOM_MENU));
         promise.then((list) => {
             console.log(list);
             const item = this.pickRandom(list);
@@ -184,7 +187,7 @@ module.exports = class {
     registerMenu(event) {
         if (this._checkAuth(event, "registerMenu")) {
             console.log('권한 있음');
-            const params = this._extractParameterArray(event.message.text);
+            const params = this._extractParameterArray(event.message.text, DELIMITER_REGISTER_MENU);
             const promise = this.menuManager.add(params[0], params[1]);
 
             promise.then((message) => {
