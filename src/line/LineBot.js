@@ -200,6 +200,8 @@ module.exports = class {
                 console.log('권한 없음');
                 this.bot.replyText('권한이 없습니다.');
             }
+        }).catch((reason) => {
+            this.bot.replyText(reason);
         });
     }
 };

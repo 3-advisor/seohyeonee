@@ -15,6 +15,9 @@ module.exports = class {
                     if (err) {
                         reject('database failure')
                     }
+                    if (val == null) {
+                        reject('can not find user');
+                    }
                     resolve(val);
                 });
             });
@@ -28,23 +31,24 @@ module.exports = class {
                     if (err) {
                         reject('database failure')
                     }
+                    if (val == null) {
+                        reject('can not find accessTarget');
+                    }
                     resolve(val);
                 });
             });
 
-            Promise.all([promise1, promise2]).then(function(values) {
+            Promise.all([getUserIdFromDB, getAccessTargetFromDB]).then(function(values) {
                 let userAuthority = values[0].authority;
                 let accessAuthorities = values[1].authorityArray;
-
-                console.log(values);
-                console.log(userAuthority);
-                console.log(accessAuthorities);
 
                 if (accessAuthorities.length > 0) {
                     resolve(accessAuthorities.includes(userAuthority));
                 } else {
                     reject('auth failure');
                 }
+            }).catch((reason) => {
+                reject(reason);
             });
         });
     }

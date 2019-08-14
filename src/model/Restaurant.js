@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var restaurantSchema = new Schema({
-  rid: BigInt,
+  rid: Number,
   name: String,
   description: String,
   tags: Array,
