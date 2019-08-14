@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2019 LINE Corporation. All rights reserved.
- * LINE Corporation PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 const AccessAuthorities = require('../model/auth/AuthAccessAuthorities');
 const Whitelist = require('../model/auth/AuthWhitelist');
 
@@ -11,7 +6,7 @@ module.exports = class {
     }
     check(userId, accessTarget) {
         return new Promise(function (resolve, reject) {
-            let promise1 = new Promise(function (resolve, reject) {
+            let getUserIdFromDB = new Promise(function (resolve, reject) {
                 let options = {
                     userId: userId
                 };
@@ -24,7 +19,7 @@ module.exports = class {
                 });
             });
 
-            let promise2 = new Promise(function (resolve, reject) {
+            let getAccessTargetFromDB = new Promise(function (resolve, reject) {
                 let options = {
                     accessTarget: accessTarget
                 };
