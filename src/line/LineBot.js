@@ -84,16 +84,14 @@ module.exports = class {
     }
 
     _extractParameterArray(text, delimiter = ' ') {
-        const replaceWhiteSpaceToSingleSpace = (text) => {
-            const regExp = /( \s+)|(?! )(\s+)/g;
-            return text.replace(regExp, ' ');
-        };
         const rawParams = this._extractParameter(text);
-        const singleSpaceParams = replaceWhiteSpaceToSingleSpace(rawParams);
-        const params = singleSpaceParams.split(new RegExp(` *(?:${delimiter} *)+`, "g")).splice(1);
-        if (params[params.length - 1] === '') {
-            params.pop();
-        }
+
+        const params = rawParams
+            .replace(/( \s+)|(?! )(\s+)/g, ' ')                 // 모든 공백 => 단일 공백
+            .split(new RegExp(` *(?:${delimiter} *)+`, "g"))    // split & trim
+            .filter(param => 0 < param.length);                 // 빈 원소는 버림
+
+        console.log(params);
         return params;
     }
 
