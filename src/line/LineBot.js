@@ -107,11 +107,12 @@ module.exports = class {
     }
 
     sendRandomMenu(event) {
-        const promise = this.menuManager.get(this._extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER));
+        const params = this._extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER);
+        const promise = this.menuManager.get(params);
         promise.then((list) => {
             console.log(list);
             let item = this.pickRandom(list);
-            this.bot.replyText(`[${item.keyword}] ${item.name}`);
+            this.bot.replyText(`[${params}] ${item.name}`);
         }).catch((reason) => {
             this.bot.replyText(reason);
         });

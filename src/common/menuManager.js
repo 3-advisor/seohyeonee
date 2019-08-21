@@ -1,7 +1,5 @@
 const Restaurant = require('../model/Restaurant');
 
-const RESTAURANT_FIND_PARAM_KEYS = ['category', 'etc'];
-
 module.exports = class {
     constructor() {
     }
@@ -22,21 +20,15 @@ module.exports = class {
             });
         });
     }
-    get(optionArray) {
-        const slicedOptionArray = optionArray.slice(0, RESTAURANT_FIND_PARAM_KEYS.length);
-
+    get(tagArray) {
         return new Promise(function (resolve, reject) {
-            // TODO fix.
-            const options = slicedOptionArray.reduce((result, item, i) => {
-                const key = RESTAURANT_FIND_PARAM_KEYS[i];
-                result[key] = item;
-                return result;
-            }, {});
-
+            // const options = {tags: {$in: tagArray}};    // 하나라도 일치시 return
+          
+            const options = {tags: {$all: tagArray}};       // 모두 일치시 return
             Restaurant.find(options, function (err, list) {
                 if (err) {
                     reject('database failure')
-                };
+                }
                 resolve(list);
             });
         });
