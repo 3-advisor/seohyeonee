@@ -2,8 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var restaurantSchema = new Schema({
+  rid: Number,
   name: String,
-  category: String,
+  description: String,
+  tags: Array,
 }, {
   collection: 'restaurant'
 });

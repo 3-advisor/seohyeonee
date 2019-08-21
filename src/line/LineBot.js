@@ -1,6 +1,8 @@
 const Searcher = require('../common/Searcher');
 const CommonLineBot = require('./CommonLineBot');
-const MenuManager = require('../common/menuManager');
+const MenuManager = require('../common/MenuManager');
+const AuthManager = require('../common/AuthManager');
+const ACCESS_TARGET = require('../model/auth/AccessTarget');
 const path = require('path');
 
 const SEND_RANDOM_MENU_DELIMITER = `#`;
@@ -11,9 +13,9 @@ module.exports = class {
         this.searcher = new Searcher({
             useHTTPS: true
         });
-        this.menuManager = new MenuManager();
         this.event = {};
-        this.auth = {};
+        this.menuManager = new MenuManager();
+        this.authManager = new AuthManager();
         this.init();
     }
 
@@ -33,10 +35,6 @@ module.exports = class {
         this.command('뭐먹지', (event) => this.sendRandomMenu(event));
         this.command('랜덤', (event) => this.sendRandom(event));
         this.command('등록', (event) => this.registerMenu(event));
-
-        const fs = require("fs");
-        const contents = fs.readFileSync(path.join(__dirname, '../../static/auth.json'));
-        this.auth = JSON.parse(contents);
     }
 
     command(name, callback) {
@@ -112,8 +110,8 @@ module.exports = class {
         const promise = this.menuManager.get(this._extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER));
         promise.then((list) => {
             console.log(list);
-            const item = this.pickRandom(list);
-            this.bot.replyText(`[${item.category}] ${item.name}`);
+            let item = this.pickRandom(list);
+            this.bot.replyText(`[${item.keyword}] ${item.name}`);
         }).catch((reason) => {
             this.bot.replyText(reason);
         });
@@ -130,7 +128,7 @@ module.exports = class {
         const thumbUrl = process.env.URL + '/images/shuttle_thumb_2019_01_29.jpg';
         this.bot.replyImage(originUrl, thumbUrl);
     }
-    
+
     sendRandomMember(source) {
         this.bot.getMembersIds(source);
     }
@@ -180,36 +178,28 @@ module.exports = class {
     }
 
     registerMenu(event) {
-        if (this._checkAuth(event, "registerMenu")) {
-            console.log('권한 있음');
-            const params = this._extractParameterArray(event.message.text);
-            const promise = this.menuManager.add(params[0], params[1]);
+        let userId = event.source.userId;
+        let promise = this.authManager.check(userId, ACCESS_TARGET.REGISTER_MENU);
 
-            promise.then((message) => {
-                this.bot.replyText(message);
-            }).catch((message) => {
-                this.bot.replyText(message);
-            });
-        } else {
-            console.log('권한 없음');
-            this.bot.replyText('권한이 없습니다.');
-        }
-    }
+        promise.then((result) => {
+            console.log('registerMenu', result);
 
-    _checkAuth(event, usage) {
-        const WHITE_LIST = "whiteList";
-        const ACCESS_AUTH = "accessAuthorities";
+            if (result) {
+                console.log('권한 있음');
+                const params = this._extractParameterArray(event.message.text);
+                const promise = this.menuManager.add(params[0], params[1]);
 
-        const userId = event.source.userId;
-        let userAuthority = "";
-
-        this.auth[WHITE_LIST].some(function (item) {
-            if (item.userId === userId) {
-                userAuthority = item.authority;
-                return true;
+                promise.then((message) => {
+                    this.bot.replyText(message);
+                }).catch((message) => {
+                    this.bot.replyText(message);
+                });
+            } else {
+                console.log('권한 없음');
+                this.bot.replyText('권한이 없습니다.');
             }
+        }).catch((reason) => {
+            this.bot.replyText(reason);
         });
-
-        return this.auth[ACCESS_AUTH][usage].includes(userAuthority);
     }
 };
