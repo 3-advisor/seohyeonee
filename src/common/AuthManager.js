@@ -13,10 +13,11 @@ module.exports = class {
 
                 Whitelist.findOne(options, function (err, val) {
                     if (err) {
-                        reject('database failure')
+                        reject('database failure');
                     }
                     if (val == null) {
-                        reject('can not find user');
+                        //reject('can not find user');
+                        resolve();
                     }
                     resolve(val);
                 });
@@ -32,15 +33,20 @@ module.exports = class {
                         reject('database failure')
                     }
                     if (val == null) {
-                        reject('can not find accessTarget');
+                        //reject('can not find accessTarget');
+                        resolve();
                     }
                     resolve(val);
                 });
             });
 
             Promise.all([getUserIdFromDB, getAccessTargetFromDB]).then(function(values) {
-                let userAuthority = values[0].authority;
-                let accessAuthorities = values[1].authorityArray;
+                if (!values.every((value) => value)) {
+                    resolve();
+                }
+
+                let userAuthority = values[0].authority;    // userId -> ADMIN
+                let accessAuthorities = values[1].authorityArray;   // regMenu -> [ADMIN, MANAGER]
 
                 if (accessAuthorities.length > 0) {
                     resolve(accessAuthorities.includes(userAuthority));
