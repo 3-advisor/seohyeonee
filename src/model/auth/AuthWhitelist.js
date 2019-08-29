@@ -1,11 +1,11 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-var whitelistSchema = new Schema({
+const whitelistSchema = new Schema({
   userId: String,
   authority: String,
 }, {
-  collection: 'auth_whitelist'
+  collection: 'auth_whitelist',
 });
 
 module.exports = mongoose.model('AuthWhitelist', whitelistSchema);
