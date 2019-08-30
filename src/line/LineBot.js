@@ -1,4 +1,3 @@
-const Searcher = require('../common/Searcher');
 const MenuManager = require('../common/MenuManager');
 const AuthManager = require('../common/AuthManager');
 const ACCESS_TARGET = require('../model/auth/AccessTarget');
@@ -8,9 +7,6 @@ const SEND_RANDOM_MENU_DELIMITER = '#';
 module.exports = class {
   constructor(commonLineBot) {
     this.bot = commonLineBot;
-    this.searcher = new Searcher({
-      useHTTPS: true,
-    });
     this.event = {};
     this.menuManager = new MenuManager();
     this.authManager = new AuthManager();
@@ -26,10 +22,6 @@ module.exports = class {
     this.command('cafe', (event) => this.sendCafeMessage(event));
     this.command('셔틀', (event) => this.sendShuttleMessage(event));
     this.command('shuttle', (event) => this.sendShuttleMessage(event));
-    this.command('이미지', (event) => this.sendSearchImage(event));
-    this.command('image', (event) => this.sendSearchImage(event));
-    this.command('검색', (event) => this.sendSearchResult(event));
-    this.command('search', (event) => this.sendSearchResult(event));
     this.command('뭐먹지', (event) => this.sendRandomMenu(event));
     this.command('랜덤', (event) => this.sendRandom(event));
     this.command('등록', (event) => this.registerMenu(event));
@@ -130,37 +122,6 @@ module.exports = class {
 
   sendRandomMember(source) {
     this.bot.getMembersIds(source);
-  }
-
-  sendSearchResult(event) {
-    const keyword = this.extractParameter(event.message.text);
-
-    if (keyword) {
-      const promise = this.searcher.search(keyword);
-      promise.then((result) => {
-        this.bot.replyText(result);
-      }).catch((reason) => {
-        this.bot.replyText(reason);
-      });
-    } else {
-      this.bot.replyText('이미지 검색 키워드가 없습니다.');
-    }
-  }
-
-  sendSearchImage(event) {
-    const keyword = this.extractParameter(event.message.text);
-
-    if (keyword) {
-      const promise = this.searcher.searchImage(keyword);
-      promise.then((url) => {
-        console.log('index', url);
-        this.bot.replyImage(url.origin, url.thumb);
-      }).catch((reason) => {
-        this.bot.replyText(reason);
-      });
-    } else {
-      this.bot.replyText('이미지 검색 키워드가 없습니다.');
-    }
   }
 
   sendRandom(event) {
