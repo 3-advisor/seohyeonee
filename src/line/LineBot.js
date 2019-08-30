@@ -14,24 +14,26 @@ module.exports = class {
   }
 
   init() {
-    this.command('도움', (event) => this.sendHelpMessage(event));
-    this.command('help', (event) => this.sendHelpMessage(event));
-    this.command('나가', (event) => this.sendLeaveMessage(event));
-    this.command('leave', (event) => this.sendLeaveMessage(event));
-    this.command('카페', (event) => this.sendCafeMessage(event));
-    this.command('cafe', (event) => this.sendCafeMessage(event));
-    this.command('셔틀', (event) => this.sendShuttleMessage(event));
-    this.command('shuttle', (event) => this.sendShuttleMessage(event));
-    this.command('뭐먹지', (event) => this.sendRandomMenu(event));
-    this.command('랜덤', (event) => this.sendRandom(event));
+    this.command(['도움', 'help'], (event) => this.sendHelpMessage(event));
+    this.command(['나가', 'leave'], (event) => this.sendLeaveMessage(event));
+    this.command(['카페', 'cafe'], (event) => this.sendCafeMessage(event));
+    this.command(['셔틀', 'shuttle'], (event) => this.sendShuttleMessage(event));
+    this.command(['뭐먹지', 'food'], (event) => this.sendRandomMenu(event));
+    this.command(['랜덤', 'random'], (event) => this.sendRandom(event));
     this.command('등록', (event) => this.registerMenu(event));
   }
 
-  command(name, callback) {
+  command(eventName, callback) {
     if (!this.event.command) {
       this.event.command = {};
     }
-    this.event.command[name] = callback;
+    if (Array.isArray(eventName)) {
+      eventName.forEach((item) => {
+        this.event.command[item] = callback;
+      });
+    } else {
+      this.event.command[eventName] = callback;
+    }
   }
 
   runCommand(keyword, obj) {
