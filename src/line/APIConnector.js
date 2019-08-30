@@ -1,4 +1,4 @@
-const request = require('request');
+const axios = require('axios');
 
 const API_HOST = 'https://api.line.me/v2/bot';
 const API_REPLY_URL = `${API_HOST}/message/reply`;
@@ -71,18 +71,18 @@ module.exports = class {
     return this.get(url);
   }
 
-  post(url, body) {
+  post(url, data) {
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.channelAccessToken}`,
     };
-    request({
+    const options = {
       url,
       method: 'POST',
       headers,
-      body,
-      json: true,
-    });
+      data,
+    };
+    axios(options);
   }
 
   get(url) {
@@ -90,20 +90,16 @@ module.exports = class {
       Authorization: `Bearer ${this.channelAccessToken}`,
     };
 
+    const options = {
+      url,
+      method: 'GET',
+      headers,
+    };
+
     return new Promise(((resolve, reject) => {
-      request({
-        url,
-        method: 'GET',
-        headers,
-        json: true,
-      }, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-          console.log(body);
-          resolve(body);
-        } else {
-          reject(`통신에 문제가 발생하였습니다. statusCode:${response.statusCode}`);
-        }
-      });
+      axios(options)
+        .then((response) => resolve(response.data))
+        .catch((err) => reject(`통신에 문제가 발생하였습니다. statusCode:${err.statusCode}`));
     }));
   }
 };
