@@ -19,41 +19,41 @@ const MONGODB_URI = (process.env.DB_ENV === 'local') ? process.env.MONGODB_LOCAL
 const app = express();
 
 if (MONGODB_URI) {
-    mongoose.connect(MONGODB_URI);
+  mongoose.connect(MONGODB_URI);
 } else {
-    const ERROR_MSG_DB_NOT_CONNECTED = `DB not connected. It may not work. (process.env.MONGODB_RUI = ${process.env.MONGODB_URI})`;
-    const RED_MSG_START = `\x1b[41m`;
-    const RED_MSG_END = `\x1b[0m`;
-    console.error(`${RED_MSG_START}${ERROR_MSG_DB_NOT_CONNECTED}${RED_MSG_END}`);
+  const ERROR_MSG_DB_NOT_CONNECTED = `DB not connected. It may not work. (process.env.MONGODB_RUI = ${process.env.MONGODB_URI})`;
+  const RED_MSG_START = '\x1b[41m';
+  const RED_MSG_END = '\x1b[0m';
+  console.error(`${RED_MSG_START}${ERROR_MSG_DB_NOT_CONNECTED}${RED_MSG_END}`);
 }
 
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/', (req, res) => {
-    if (process.env.NODE_ENV == 'production') {
-        Restaurant.find(function (err, list) { // 데이터 임시 출력
-            if (err) return res.status(500).send({
-                error: 'database failure'
-            });
-            res.json(list);
-        });
-    } else if (process.env.NODE_ENV == 'development') {
-        res.sendFile(path.join(__dirname, '/src/views/test.html'));
-    }
+  if (process.env.NODE_ENV === 'production') {
+    Restaurant.find((err, list) => { // 데이터 임시 출력
+      if (err) return res.status(500).send({
+        error: 'database failure',
+      });
+      res.json(list);
+    });
+  } else if (process.env.NODE_ENV === 'development') {
+    res.sendFile(path.join(__dirname, '/src/views/test.html'));
+  }
 });
 
-app.post('/line-webhook', express.json(), function (req, res) {
-    let commonLineBot = null;
-    if (process.env.NODE_ENV == 'development') {
-        commonLineBot = new CommonLineBot(new TestAPIConnector(res));
-    } else if (process.env.NODE_ENV == 'production') {
-        res.status(200).end();
-        commonLineBot = new CommonLineBot(new APIConnector(LINE_API_TOKEN));
-    }
-    const lineBot = new LineBot(commonLineBot);
-    lineBot.start(req.body);
+app.post('/line-webhook', express.json(), (req, res) => {
+  let commonLineBot = null;
+  if (process.env.NODE_ENV === 'development') {
+    commonLineBot = new CommonLineBot(new TestAPIConnector(res));
+  } else if (process.env.NODE_ENV === 'production') {
+    res.status(200).end();
+    commonLineBot = new CommonLineBot(new APIConnector(LINE_API_TOKEN));
+  }
+  const lineBot = new LineBot(commonLineBot);
+  lineBot.start(req.body);
 });
 
 app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}!`)
+  console.log(`App listening on port ${PORT}!`);
 });
