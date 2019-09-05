@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const APIConnector = require('./APIConnector');
 
-module.exports = class RealAPIConnector extends APIConnector {
+module.exports = class RealAPIConnector extends AbstractAPIConnector {
   constructor(channelAccessToken) {
     super();
     if (!channelAccessToken) {
