@@ -1,11 +1,11 @@
 const Restaurant = require('../model/Restaurant');
 
 module.exports = class {
-  add(name, tagArray) {
+  add(name, tagArray, description = '') {
     const entity = new Restaurant({
       name,
       tags: tagArray,
-      description: '',
+      description,
     });
 
     return new Promise(((resolve, reject) => {
