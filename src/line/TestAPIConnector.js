@@ -1,6 +1,6 @@
 const APIConnector = require('./APIConnector');
 
-module.exports = class TestAPIConnector extends APIConnector {
+module.exports = class TestAPIConnector extends AbstractAPIConnector {
   constructor(res) {
     super();
     this.res = res;
