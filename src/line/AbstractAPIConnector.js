@@ -9,7 +9,7 @@ const API_GET_ROOM_MEMBERS_ID_URL = `${API_HOST}/room/{roomId}/members/ids`;
 const API_GET_GROUP_MEMBER_PROFILE_URL = `${API_HOST}/group/{groupId}/member/{userId}`;
 const API_GET_ROOM_MEMBER_PROFILE_URL = `${API_HOST}/room/{roomId}/member/{userId}`;
 
-module.exports = class APIConnector {
+module.exports = class AbstractAPIConnector {
   constructor() {
     if (new.target === APIConnector) {
       throw new Error('Cannot construct Abstract instances directly');
