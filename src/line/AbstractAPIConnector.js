@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 const API_HOST = 'https://api.line.me/v2/bot';
 const API_REPLY_URL = `${API_HOST}/message/reply`;
 const API_PUSH_URL = `${API_HOST}/message/push`;
@@ -11,12 +9,11 @@ const API_GET_ROOM_MEMBERS_ID_URL = `${API_HOST}/room/{roomId}/members/ids`;
 const API_GET_GROUP_MEMBER_PROFILE_URL = `${API_HOST}/group/{groupId}/member/{userId}`;
 const API_GET_ROOM_MEMBER_PROFILE_URL = `${API_HOST}/room/{roomId}/member/{userId}`;
 
-module.exports = class {
-  constructor(channelAccessToken) {
-    if (!channelAccessToken) {
-      throw new Error('Channel Access Token is required.');
+module.exports = class AbstractAPIConnector {
+  constructor() {
+    if (new.target === AbstractAPIConnector) {
+      throw new Error('Cannot construct Abstract instances directly');
     }
-    this.channelAccessToken = channelAccessToken;
   }
 
   replyMessage(replyToken, messages) {
@@ -27,7 +24,7 @@ module.exports = class {
     this.post(API_REPLY_URL, body);
   }
 
-  pushMessage(to, messages) { // featured 
+  pushMessage(to, messages) {
     const body = {
       to,
       messages,
@@ -57,7 +54,6 @@ module.exports = class {
 
   getRoomMembersIDs(roomId) {
     const url = API_GET_ROOM_MEMBERS_ID_URL.replace('{roomId}', roomId);
-    console.log(url);
     return this.get(url);
   }
 
@@ -71,35 +67,11 @@ module.exports = class {
     return this.get(url);
   }
 
-  post(url, data) {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.channelAccessToken}`,
-    };
-    const options = {
-      url,
-      method: 'POST',
-      headers,
-      data,
-    };
-    axios(options);
+  post() {
+    throw new Error('Must override method');
   }
 
-  get(url) {
-    const headers = {
-      Authorization: `Bearer ${this.channelAccessToken}`,
-    };
-
-    const options = {
-      url,
-      method: 'GET',
-      headers,
-    };
-
-    return new Promise(((resolve, reject) => {
-      axios(options)
-        .then((response) => resolve(response.data))
-        .catch((err) => reject(`통신에 문제가 발생하였습니다. statusCode:${err.statusCode}`));
-    }));
+  get() {
+    throw new Error('Must override method');
   }
 };
