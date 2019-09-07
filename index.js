@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 
 const LineBot = require('./src/line/LineBot');
 const CommonLineBot = require('./src/line/CommonLineBot');
-const RealAPIConnector = require('./src/line/RealAPIConnector');
+const APIConnector = require('./src/line/APIConnector');
 const TestAPIConnector = require('./src/line/TestAPIConnector');
 
 const Restaurant = require('./src/model/Restaurant');
@@ -48,7 +48,7 @@ app.post('/line-webhook', express.json(), (req, res) => {
     commonLineBot = new CommonLineBot(new TestAPIConnector(res));
   } else if (process.env.NODE_ENV === 'production') {
     res.status(200).end();
-    commonLineBot = new CommonLineBot(new RealAPIConnector(LINE_API_TOKEN));
+    commonLineBot = new CommonLineBot(new APIConnector(LINE_API_TOKEN));
   }
   const lineBot = new LineBot(commonLineBot);
   lineBot.start(req.body);
