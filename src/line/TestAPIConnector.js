@@ -1,4 +1,4 @@
-const APIConnector = require('./APIConnector');
+const AbstractAPIConnector = require('./AbstractAPIConnector');
 
 module.exports = class TestAPIConnector extends AbstractAPIConnector {
   constructor(res) {

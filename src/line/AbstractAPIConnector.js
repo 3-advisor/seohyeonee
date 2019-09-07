@@ -11,7 +11,7 @@ const API_GET_ROOM_MEMBER_PROFILE_URL = `${API_HOST}/room/{roomId}/member/{userI
 
 module.exports = class AbstractAPIConnector {
   constructor() {
-    if (new.target === APIConnector) {
+    if (new.target === AbstractAPIConnector) {
       throw new Error('Cannot construct Abstract instances directly');
     }
   }
