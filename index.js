@@ -10,6 +10,8 @@ const TestAPIConnector = require('./src/line/TestAPIConnector');
 
 const Restaurant = require('./src/model/Restaurant');
 
+const apiRouter = require('./routes/api');
+
 dotenv.config({ path: './local.env' });
 
 const LINE_API_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || 'DUMMY_LINE_CHANNEL_ACCESS_TOKEN';
@@ -28,6 +30,8 @@ if (MONGODB_URI) {
 }
 
 app.use(express.static(path.join(__dirname, 'static')));
+
+app.use('/api', apiRouter);
 
 app.get('/', (req, res) => {
   if (process.env.NODE_ENV === 'production') {
