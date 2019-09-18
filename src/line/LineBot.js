@@ -107,7 +107,7 @@ module.exports = class {
     promise.then((list) => {
       console.log(list);
       const item = this.pickRandom(list);
-      this.bot.replyText(`${item.name} ${item.tags.map((x) => `#${x}`)}`);
+      this.bot.replyText(`${item.name}\n#${item.tags.join(' #')}\n${item.description || ''}`);
     }).catch((reason) => {
       this.bot.replyText(reason);
     });
