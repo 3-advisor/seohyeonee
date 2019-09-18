@@ -3,9 +3,9 @@ const AuthManager = require('../common/AuthManager');
 const ACCESS_TARGET = require('../model/auth/AccessTarget');
 
 // todo : env에서 설정하도록 하기?
-const DELIMITER_DEFAULT = ` `;
-const DELIMITER_SEND_RANDOM_MENU = `#`;
-const DELIMITER_REGISTER_MENU = `#`;
+const DELIMITER_DEFAULT = '';
+const DELIMITER_SEND_RANDOM_MENU = '#';
+const DELIMITER_REGISTER_MENU = '#';
 
 module.exports = class {
   constructor(commonLineBot) {
@@ -107,7 +107,7 @@ module.exports = class {
     promise.then((list) => {
       console.log(list);
       const item = this.pickRandom(list);
-      this.bot.replyText(`[${tagArray}] ${item.name}`);
+      this.bot.replyText(`${item.name}\n#${item.tags.join(' #')}\n${item.description || ''}`);
     }).catch((reason) => {
       this.bot.replyText(reason);
     });
@@ -151,7 +151,7 @@ module.exports = class {
       if (result) {
         console.log('권한 있음');
         const params = this.extractParameterArray(event.message.text, DELIMITER_REGISTER_MENU);
-        const menuName = params[0];
+        const [menuName] = params;
         const tagArray = params.slice(1);
         const promise = this.menuManager.add(menuName, tagArray);
 
