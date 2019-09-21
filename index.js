@@ -10,7 +10,7 @@ const TestAPIConnector = require('./src/line/TestAPIConnector');
 
 const Restaurant = require('./src/model/Restaurant');
 
-const apiRouter = require('./routes/api');
+const apiRouter = require('./src/routes/api');
 
 dotenv.config({ path: './local.env' });
 
