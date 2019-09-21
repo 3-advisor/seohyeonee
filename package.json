@@ -16,7 +16,7 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "!(*bundle).js": [
       "./node_modules/.bin/eslint"
     ]
   },
