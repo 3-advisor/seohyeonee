@@ -8,8 +8,6 @@ const CommonLineBot = require('./src/line/CommonLineBot');
 const RealAPIConnector = require('./src/line/RealAPIConnector');
 const TestAPIConnector = require('./src/line/TestAPIConnector');
 
-const Restaurant = require('./src/model/Restaurant');
-
 const apiRouter = require('./src/routes/api');
 
 dotenv.config({ path: './local.env' });
@@ -34,14 +32,11 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use('/api', apiRouter);
 
 app.get('/', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    Restaurant.find((err, list) => { // 데이터 임시 출력
-      if (err) return res.status(500).send({
-        error: 'database failure',
-      });
-      res.json(list);
-    });
-  } else if (process.env.NODE_ENV === 'development') {
+  res.sendFile(path.join(__dirname, '/src/views/index.html'));
+});
+
+app.get('/test', (req, res) => {
+  if (process.env.NODE_ENV === 'development') {
     res.sendFile(path.join(__dirname, '/src/views/test.html'));
   }
 });
