@@ -1,6 +1,6 @@
-const MenuManager = require('../common/MenuManager');
-const AuthManager = require('../common/AuthManager');
-const ACCESS_TARGET = require('../model/auth/AccessTarget');
+const MenuManager = require('../common/menuManager.js');
+const AuthManager = require('../common/AuthManager.js');
+const ACCESS_TARGET = require('../model/auth/AccessTarget.js');
 
 // todo : env에서 설정하도록 하기?
 const DELIMITER_DEFAULT = ' ';
