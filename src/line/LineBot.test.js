@@ -1,4 +1,4 @@
-const LineBot = require('../LineBot');
+const LineBot = require('./LineBot');
 const lineBot = new LineBot();
 
 
