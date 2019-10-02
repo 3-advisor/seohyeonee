@@ -3,7 +3,7 @@ const AuthManager = require('../common/AuthManager');
 const ACCESS_TARGET = require('../model/auth/AccessTarget');
 
 // todo : env에서 설정하도록 하기?
-const DELIMITER_DEFAULT = '';
+const DELIMITER_DEFAULT = ' ';
 const DELIMITER_SEND_RANDOM_MENU = '#';
 const DELIMITER_REGISTER_MENU = '#';
 
