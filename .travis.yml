@@ -1,4 +1,6 @@
 language: node_js
+
+# CI
 node_js:
   - "stable"
 branches:
@@ -8,3 +10,25 @@ branches:
 cache:
   directories:
     - "node_modules"
+
+# CD CONFIG
+deploy:
+  provider: heroku
+  api_key:
+    secure:     # Encrypted Heroku API Key.
+  # app:        # Application name. (Default : Repository name)
+    # master:   # Application name on master branch.
+  # on:         
+    # branch:   # Deploying Branches. (Default : master)
+    # all_branched: true
+    # node:     # NodeJS version you want to test.
+  # strategy:   # Mechanisms for deploying. (Default : api - Heroku’s Build API)
+
+# CD ACTION
+  # before_deploy:
+  # deploy:
+  # after_deploy:
+  # run:            # Run a command on Heroku after a successful deploy.
+    # - "rake db:migrate"
+    # - "rake cleanup"
+    # - restart
