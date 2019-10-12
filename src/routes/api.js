@@ -1,39 +1,38 @@
 const express = require('express');
 
-const Restaurant = require('../model/Restaurant');
+const MenuManager = require('../common/menuManager');
+const menuManager = new MenuManager();
 
 const router = express.Router();
 
 router.get('/restaurant', (req, res) => {
-  Restaurant.find((err, list) => {
-    if (err) return res.status(500).send({
-      error: 'database failure',
-    });
+  menuManager.get().then((list) => {
     res.json(list);
-  });
+  })
+    .catch((error) => {
+      res.json(error);
+    });
 });
 
 router.post('/restaurant', express.json(), (req, res) => {
-  const entity = new Restaurant(req.body);
-
-  entity.save((err) => {
-    if (err) return res.status(500).send({
-      error: 'database failure',
+  console.log(req.body);
+  menuManager.get(req.body).then((message) => {
+    res.json(message);
+  })
+    .catch((error) => {
+      res.json(error);
     });
-    res.json({
-      message: 'ok',
-    });
-  });
 });
 
-router.get('/restaurant/tag/:tag', (req, res) => {
-  const options = { tags: { $in: [req.params.tag] } };
-  Restaurant.find(options, (err, list) => {
-    if (err) return res.status(500).send({
-      error: 'database failure',
-    });
+router.get('/restaurant/tag/', (req, res) => {
+  console.log(req.query);
+  const tags = Array.isArray(req.query.tag) ? req.query.tag : [req.query.tag];
+  menuManager.get(tags).then((list) => {
     res.json(list);
-  });
+  })
+    .catch((error) => {
+      res.json(error);
+    });
 });
 
 module.exports = router;
