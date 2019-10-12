@@ -1,11 +1,10 @@
 const Restaurant = require('../model/Restaurant');
 
-module.exports = class {
-  add(name, tagArray, description = '') {
+module.exports = class MenuManager {
+  add(data) {
     const entity = new Restaurant({
-      name,
-      tags: tagArray,
-      description,
+      description: '',
+      ...data,
     });
 
     return new Promise(((resolve, reject) => {
