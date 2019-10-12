@@ -1,4 +1,4 @@
-const MenuManager = require('../common/menuManager.js');
+const MenuManager = require('../common/MenuManager.js');
 const AuthManager = require('../common/AuthManager.js');
 const ACCESS_TARGET = require('../model/auth/AccessTarget.js');
 
