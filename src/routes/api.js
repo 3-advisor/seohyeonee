@@ -1,6 +1,6 @@
 const express = require('express');
 
-const MenuManager = require('../common/menuManager');
+const MenuManager = require('../common/MenuManager');
 const menuManager = new MenuManager();
 
 const router = express.Router();

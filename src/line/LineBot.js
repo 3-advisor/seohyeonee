@@ -153,7 +153,10 @@ module.exports = class {
         const params = this.extractParameterArray(event.message.text, DELIMITER_REGISTER_MENU);
         const [menuName] = params;
         const tagArray = params.slice(1);
-        const promise = this.menuManager.add(menuName, tagArray);
+        const promise = this.menuManager.add({ 
+          name: menuName, 
+          tags: tagArray,
+        });
 
         promise.then((message) => {
           this.bot.replyText(message);
