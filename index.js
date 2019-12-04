@@ -14,12 +14,17 @@ dotenv.config({ path: './local.env' });
 
 const LINE_API_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || 'DUMMY_LINE_CHANNEL_ACCESS_TOKEN';
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = (process.env.DB_ENV === 'local') ? process.env.MONGODB_LOCAL_URI : process.env.MONGODB_URI;
+const MONGODB_URI = (process.env.DB_ENV === 'local') ? `mongodb://localhost:${process.env.MONGODB_PORT}/${process.env.MONGODB_DB_NAME}`
+  : process.env.MONGODB_URI;
 
 const app = express();
 
 if (MONGODB_URI) {
-  mongoose.connect(MONGODB_URI);
+  console.log(`try connect to : ${MONGODB_URI}`);
+  mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 } else {
   const ERROR_MSG_DB_NOT_CONNECTED = `DB not connected. It may not work. (process.env.MONGODB_RUI = ${process.env.MONGODB_URI})`;
   const RED_MSG_START = '\x1b[41m';
