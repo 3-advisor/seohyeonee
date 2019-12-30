@@ -1,8 +1,11 @@
-const MenuManager = require('../common/MenuManager');
-const AuthManager = require('../common/AuthManager');
-const ACCESS_TARGET = require('../model/auth/AccessTarget');
+const MenuManager = require('../common/MenuManager.js');
+const AuthManager = require('../common/AuthManager.js');
+const ACCESS_TARGET = require('../model/auth/AccessTarget.js');
 
-const SEND_RANDOM_MENU_DELIMITER = '#';
+// todo : env에서 설정하도록 하기?
+const DELIMITER_DEFAULT = ' ';
+const DELIMITER_SEND_RANDOM_MENU = '#';
+const DELIMITER_REGISTER_MENU = '#';
 
 module.exports = class {
   constructor(commonLineBot) {
@@ -73,7 +76,7 @@ module.exports = class {
     return text.replace(regExp, '').trim();
   }
 
-  extractParameterArray(text, delimiter = ' ') {
+  extractParameterArray(text, delimiter = DELIMITER_DEFAULT) {
     const rawParams = this.extractParameter(text);
 
     const params = rawParams
@@ -99,12 +102,12 @@ module.exports = class {
   }
 
   sendRandomMenu(event) {
-    const params = this.extractParameterArray(event.message.text, SEND_RANDOM_MENU_DELIMITER);
-    const promise = this.menuManager.get(params);
+    const tagArray = this.extractParameterArray(event.message.text, DELIMITER_SEND_RANDOM_MENU);
+    const promise = this.menuManager.get(tagArray);
     promise.then((list) => {
       console.log(list);
       const item = this.pickRandom(list);
-      this.bot.replyText(`[${params}] ${item.name}`);
+      this.bot.replyText(`${item.name}\n#${item.tags.join(' #')}\n${item.description || ''}`);
     }).catch((reason) => {
       this.bot.replyText(reason);
     });
@@ -141,14 +144,19 @@ module.exports = class {
 
   registerMenu(event) {
     const { userId } = event.source;
-        
+
     this.authManager.check(userId, ACCESS_TARGET.REGISTER_MENU).then((result) => {
       console.log('registerMenu', result);
 
       if (result) {
         console.log('권한 있음');
-        const params = this.extractParameterArray(event.message.text);
-        const promise = this.menuManager.add(params[0], params[1]);
+        const params = this.extractParameterArray(event.message.text, DELIMITER_REGISTER_MENU);
+        const [menuName] = params;
+        const tagArray = params.slice(1);
+        const promise = this.menuManager.add({ 
+          name: menuName, 
+          tags: tagArray,
+        });
 
         promise.then((message) => {
           this.bot.replyText(message);
