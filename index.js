@@ -1,32 +1,42 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
 const LineBot = require('./src/line/LineBot');
 const CommonLineBot = require('./src/line/CommonLineBot');
 const APIConnector = require('./src/line/APIConnector');
 const TestAPIConnector = require('./src/line/TestAPIConnector');
 
-const Restaurant = require('./src/model/Restaurant');
+const dotEnvStorage = require('./src/util/dotEnvStorage');
 
 const apiRouter = require('./src/routes/api');
 
-dotenv.config({ path: './local.env' });
+const Restaurant = require('./src/model/Restaurant');
 
-const LINE_API_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || 'DUMMY_LINE_CHANNEL_ACCESS_TOKEN';
-const PORT = process.env.PORT || 3000;
-const MONGODB_URI = (process.env.DB_ENV === 'local') ? `mongodb://localhost:${process.env.MONGODB_PORT}/${process.env.MONGODB_DB_NAME}`
-  : process.env.MONGODB_URI;
+
+const LINE_API_TOKEN = dotEnvStorage.lineApiToken;
+const PORT = dotEnvStorage.mongoosePort;
+const MONGODB_URI = dotEnvStorage.mongoDbUri;
 
 const app = express();
 
 if (MONGODB_URI) {
   console.log(`try connect to : ${MONGODB_URI}`);
-  mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+
+  mongoose.connect(
+    MONGODB_URI,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
+    (err) => {
+      if (err) {
+        console.error(err);
+        console.log(`extras: ${MONGODB_URI}`);
+      }
+      console.log('일단 들어왔음');
+    }
+  );
 } else {
   const ERROR_MSG_DB_NOT_CONNECTED = `DB not connected. It may not work. (process.env.MONGODB_RUI = ${process.env.MONGODB_URI})`;
   const RED_MSG_START = '\x1b[41m';
