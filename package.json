@@ -8,6 +8,8 @@
     "dev": "cross-env NODE_ENV=development node index.js",
     "dev:local": "cross-env NODE_ENV=development DB_ENV=local node index.js",
     "db:local": "cross-env node dev_db/index.js",
+    "dev:fe": "cross-env node build.js --watch",
+    "build": "cross-env node build.js",
     "lint": "./node_modules/.bin/eslint \"**/*.js\"",
     "lint:fix": "./node_modules/.bin/eslint \"**/*.js\" --fix",
     "test": "jest"
