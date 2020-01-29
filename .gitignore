@@ -7,6 +7,8 @@ local.env
 
 # ---
 
+# MacOS
+.DS_Store
 
 # Logs
 logs
@@ -69,3 +71,5 @@ typings/
 
 # next.js build output
 .next
+
+bundle.js

@@ -1,0 +1,3 @@
+[submodule "seohyeonee-front"]
+	path = seohyeonee-front
+	url = https://github.com/3-advisor/seohyeonee-front.git
