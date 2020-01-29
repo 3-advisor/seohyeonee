@@ -7,8 +7,10 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node index.js",
     "dev:local": "cross-env NODE_ENV=development DB_ENV=local node index.js",
+    "db:local": "cross-env node dev_db/index.js",
     "lint": "./node_modules/.bin/eslint \"**/*.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:fix": "./node_modules/.bin/eslint \"**/*.js\" --fix",
+    "test": "jest"
   },
   "husky": {
     "hooks": {
@@ -39,7 +41,10 @@
     "cross-env": "^5.2.0",
     "dotenv": "^8.0.0",
     "eslint": "^6.2.1",
+    "eslint-plugin-jest": "^22.17.0",
     "husky": "^4.0.0-beta.1",
-    "lint-staged": "^9.2.3"
+    "jest": "^24.9.0",
+    "lint-staged": "^9.2.3",
+    "shelljs": "^0.8.3"
   }
 }

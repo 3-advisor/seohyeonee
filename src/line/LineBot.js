@@ -1,6 +1,6 @@
-const MenuManager = require('../common/MenuManager');
-const AuthManager = require('../common/AuthManager');
-const ACCESS_TARGET = require('../model/auth/AccessTarget');
+const MenuManager = require('../common/MenuManager.js');
+const AuthManager = require('../common/AuthManager.js');
+const ACCESS_TARGET = require('../model/auth/AccessTarget.js');
 
 // todo : env에서 설정하도록 하기?
 const DELIMITER_DEFAULT = ' ';
@@ -107,7 +107,7 @@ module.exports = class {
     promise.then((list) => {
       console.log(list);
       const item = this.pickRandom(list);
-      this.bot.replyText(`[${tagArray}] ${item.name}`);
+      this.bot.replyText(`${item.name}\n#${item.tags.join(' #')}\n${item.description || ''}`);
     }).catch((reason) => {
       this.bot.replyText(reason);
     });

@@ -1,29 +1,32 @@
-### Description
+### 관련된 Issue, PR 또는 링크
+
+#(issue, pr)
+
+### 상세 설명
 
 <!--
-- summary of the change
-- describe as detailed as possible
+- 변경점을 적어주세요.
+- 가능한 많이 적어주세요.
 -->
 
-related # (issue, pr)
 
----
 
-### Type of change
+### 변경의 종류
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Dependencies modified
+- [ ] 버그 수정 (큰 변경점이 없는 수정)
+- [ ] 새로운 기능 추가 (큰 변경점이 없는 수정)
+- [ ] 큰 변경점 발생 (기존의 로직들이 이전과 같이 작동하지 않을 수 있는 경우)
+- [ ] 종속성 변경
 
-### Checklist:
+### 체크리스트
+
+- [ ] `셀프리뷰`를 했음
+- [ ] `이해하기 어려운 코드`에 대해 `주석`을 달았음
+- [ ] `새로운 Warning` 발생하지 않음
+- [ ] 새로운 기능이 잘 작동 (또는 효율적으로 작동) 하는지 `테스트 코드`를 작성하였음.
+- [ ] 로컬에서 `기존에 있던 테스트코드`와 `추가한 테스트코드`를 모두 돌렸음.
+- [ ] 새로운 종속성 변경에 대해 하위 모듈에도 모두 반영되게끔 하였고 잘 작동하는지 테스트했음.
 
 <!-- 
-- [ ] My code follows the style guidelines of this project
-- [ ] New and existing unit tests pass locally with my changes
+- [ ] My code follows the style guidelines of this project : 어차피 무조건 강제됨.
 -->
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] Any dependent changes have been merged and published in downstream modules
